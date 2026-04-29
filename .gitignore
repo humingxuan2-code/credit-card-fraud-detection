@@ -3,8 +3,6 @@ __pycache__/
 .venv/
 env/
 models/*.pkl
-outputs/figures/*.png
-outputs/reports/*.txt
 data/raw/*.csv
 !data/raw/.gitkeep
 !data/processed/.gitkeep

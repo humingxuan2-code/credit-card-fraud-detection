@@ -1,0 +1,46 @@
+Credit Card Fraud Detection Training Report
+==========================================
+
+Model leaderboard on validation set:
+- random_forest: val PR-AUC=0.757475, val F1=0.780142, val Recall=0.696203, best threshold=0.80
+- logistic_regression: val PR-AUC=0.680149, val F1=0.369942, val Recall=0.810127, best threshold=0.95
+
+Selected model: random_forest
+Selected threshold: 0.80
+Selected model validation precision: 0.887097
+Selected model validation recall: 0.696203
+Selected model validation F1: 0.780142
+
+Threshold tuning details for the selected model:
+- threshold=0.05, precision=0.019170, recall=0.924051, f1=0.037561
+- threshold=0.10, precision=0.046254, recall=0.898734, f1=0.087980
+- threshold=0.15, precision=0.084951, recall=0.886076, f1=0.155039
+- threshold=0.20, precision=0.131274, recall=0.860759, f1=0.227806
+- threshold=0.25, precision=0.189266, recall=0.848101, f1=0.309469
+- threshold=0.30, precision=0.260000, recall=0.822785, f1=0.395137
+- threshold=0.35, precision=0.336842, recall=0.810127, f1=0.475836
+- threshold=0.40, precision=0.388889, recall=0.797468, f1=0.522822
+- threshold=0.45, precision=0.470149, recall=0.797468, f1=0.591549
+- threshold=0.50, precision=0.533898, recall=0.797468, f1=0.639594
+- threshold=0.55, precision=0.611650, recall=0.797468, f1=0.692308
+- threshold=0.60, precision=0.704545, recall=0.784810, f1=0.742515
+- threshold=0.65, precision=0.779221, recall=0.759494, f1=0.769231
+- threshold=0.70, precision=0.828571, recall=0.734177, f1=0.778523
+- threshold=0.75, precision=0.838235, recall=0.721519, f1=0.775510
+- threshold=0.80, precision=0.887097, recall=0.696203, f1=0.780142
+- threshold=0.85, precision=0.883333, recall=0.670886, f1=0.762590
+- threshold=0.90, precision=0.894737, recall=0.645570, f1=0.750000
+- threshold=0.95, precision=0.901961, recall=0.582278, f1=0.707692
+
+Test set classification report:
+              precision    recall  f1-score   support
+
+           0     0.9996    0.9997    0.9996     56864
+           1     0.8085    0.7755    0.7917        98
+
+    accuracy                         0.9993     56962
+   macro avg     0.9041    0.8876    0.8957     56962
+weighted avg     0.9993    0.9993    0.9993     56962
+
+Test ROC-AUC: 0.981211
+Test PR-AUC: 0.820218

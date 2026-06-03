@@ -36,7 +36,9 @@ def find_best_threshold(y_true, y_prob):
 def main():
     ensure_output_dirs()
 
-    X_train, X_val, X_test, y_train, y_val, y_test = split_scale_and_validate()
+    X_train, X_val, X_test, y_train, y_val, y_test, amount_scaler = split_scale_and_validate(
+        return_scaler=True
+    )
 
     smote = SMOTE(random_state=42)
     X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
@@ -143,6 +145,7 @@ def main():
         "model": best_model,
         "threshold": best_threshold,
         "feature_columns": X_train.columns.tolist(),
+        "amount_scaler": amount_scaler,
     }
     joblib.dump(model_artifact, MODEL_PATH)
 

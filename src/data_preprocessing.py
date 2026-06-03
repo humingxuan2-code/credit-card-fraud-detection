@@ -26,6 +26,7 @@ def split_scale_and_validate(
     test_size: float = 0.2,
     validation_size: float = 0.2,
     random_state: int = 42,
+    return_scaler: bool = False,
 ):
     df = load_dataset()
     X, y = prepare_features(df)
@@ -54,5 +55,8 @@ def split_scale_and_validate(
         X_train["Amount"] = scaler.fit_transform(X_train[["Amount"]]).ravel()
         X_val["Amount"] = scaler.transform(X_val[["Amount"]]).ravel()
         X_test["Amount"] = scaler.transform(X_test[["Amount"]]).ravel()
+
+    if return_scaler:
+        return X_train, X_val, X_test, y_train, y_val, y_test, scaler
 
     return X_train, X_val, X_test, y_train, y_val, y_test

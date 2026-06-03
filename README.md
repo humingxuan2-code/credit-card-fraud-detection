@@ -53,7 +53,7 @@ The dataset contains anonymized PCA-based transaction features, transaction amou
 6. Select the best model by validation `PR-AUC`
 7. Tune the decision threshold on the validation set
 8. Evaluate on the held-out test set
-9. Save the selected model, threshold, and feature metadata
+9. Save the selected model, threshold, feature metadata, and preprocessing objects
 
 ### Models Compared
 
@@ -155,6 +155,12 @@ Generate evaluation outputs:
 
 ```bash
 python src/evaluate.py
+```
+
+Use the saved model for prediction:
+
+```bash
+python src/predict.py
 ```
 
 ## Output Files

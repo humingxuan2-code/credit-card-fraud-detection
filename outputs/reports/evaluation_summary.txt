@@ -1,3 +1,52 @@
+Credit Card Fraud Detection Evaluation Summary
+==============================================
+
 Selected model: random_forest
-Decision threshold: 0.80
-Saved confusion matrix, PR curve, and ROC curve to outputs/figures.
+Selected threshold: 0.80
+
+Final Test Metrics
+------------------
+- Fraud precision: 0.808511
+- Fraud recall: 0.775510
+- Fraud F1-score: 0.791667
+- ROC-AUC: 0.981211
+- PR-AUC: 0.820218
+
+Confusion Matrix
+----------------
+Rows represent actual labels and columns represent predicted labels.
+
+|                      | Predicted Non-Fraud | Predicted Fraud |
+|----------------------|--------------------:|----------------:|
+| Actual Non-Fraud     |              56,846 |              18 |
+| Actual Fraud         |                  22 |              76 |
+
+Error Interpretation
+--------------------
+- False positives: 18 normal transactions were flagged as fraud. These cases may increase manual review workload or create customer friction.
+- False negatives: 22 fraudulent transactions were missed. In a fraud detection setting, these are often more costly because they may represent undetected fraudulent activity.
+- True positives: 76 fraudulent transactions were correctly identified.
+- True negatives: 56,846 normal transactions were correctly classified.
+
+Threshold Tradeoff
+------------------
+The selected threshold of 0.80 produces a relatively conservative fraud prediction rule. It keeps false positives low while still detecting most fraud cases in the held-out test set. Lowering the threshold would likely increase recall but also increase false positives. Raising the threshold would likely improve precision but miss more fraud cases.
+
+Limitations
+-----------
+- The dataset is anonymized and does not include richer behavioral, account-level, or merchant-level features.
+- The experiment uses a single stratified train/validation/test split rather than cross-validation or time-based validation.
+- SMOTE is applied only to the training split, but synthetic oversampling may not fully represent real fraud behavior.
+- The model is evaluated as a reproducible offline ML experiment and should not be treated as production-ready financial risk infrastructure.
+- No operational cost matrix, investigation capacity, regulatory constraints, or live distribution-shift analysis is included.
+
+Reproducibility Notes
+---------------------
+- Dataset path: data/raw/creditcard.csv
+- Test split: 20% of the full dataset
+- Validation split: 20% of the train-full split
+- Effective split: approximately 64% train, 16% validation, and 20% test
+- Stratified splitting is used for both split stages.
+- Random seed: 42
+- Model artifact: models/fraud_model.pkl
+- Evaluation figures: outputs/figures/

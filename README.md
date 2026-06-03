@@ -60,9 +60,28 @@ The dataset contains anonymized PCA-based transaction features, transaction amou
 - `LogisticRegression`
 - `RandomForestClassifier`
 
-### Why PR-AUC Matters Here
+### Data Split
 
-Because fraud cases are rare, `PR-AUC` is more informative than plain accuracy and often more practically meaningful than `ROC-AUC` alone. This project uses validation `PR-AUC` to choose the final model.
+The split ratios are defined in `src/data_preprocessing.py`:
+
+- test set: `20%` of the full dataset
+- validation set: `20%` of the remaining train-full split
+- final effective split: approximately `64%` train, `16%` validation, and `20%` test
+
+All splits use stratification so that the rare fraud class is represented consistently across train, validation, and test sets.
+
+## Evaluation Strategy
+
+Accuracy is not a reliable primary metric for this task because the dataset is extremely imbalanced. A model that predicts every transaction as non-fraud would still achieve very high accuracy while failing to detect the minority fraud class.
+
+This project emphasizes metrics that better reflect ranking quality, minority-class detection, and decision-threshold behavior:
+
+- `PR-AUC`: measures the precision-recall tradeoff across thresholds and is especially useful when the positive class is rare.
+- `ROC-AUC`: measures how well the model separates fraud from non-fraud across thresholds, but it can look optimistic under severe class imbalance.
+- `F1-score`: balances fraud precision and fraud recall at a chosen threshold.
+- `Confusion matrix`: shows the concrete number of true positives, false positives, false negatives, and true negatives.
+
+Threshold tuning is important because the default `0.50` decision threshold may not match the practical cost of fraud detection. This project tunes the threshold on the validation set and then evaluates the selected threshold on a held-out test set.
 
 ## Experimental Result
 
@@ -86,12 +105,37 @@ Selected threshold: `0.80`
 | ROC-AUC | 0.9812 |
 | PR-AUC | 0.8202 |
 
+### Final Confusion Matrix
+
+At threshold `0.80`, the held-out test set confusion matrix is:
+
+|  | Predicted Non-Fraud | Predicted Fraud |
+|---|---:|---:|
+| Actual Non-Fraud | 56,846 | 18 |
+| Actual Fraud | 22 | 76 |
+
 ### Interpretation
 
 - The model achieves strong separation performance with `ROC-AUC = 0.9812`
 - `PR-AUC = 0.8202` indicates good fraud ranking quality under severe imbalance
 - Fraud precision and recall are reasonably balanced after threshold tuning
 - Random Forest clearly outperforms the logistic baseline on validation `PR-AUC`
+
+## Error Analysis
+
+False positives are normal transactions that the model flags as fraud. In practice, these can create review workload or customer friction. False negatives are fraudulent transactions that the model misses. In fraud detection, false negatives are often more dangerous because they may correspond to direct financial loss or delayed fraud response.
+
+At the selected threshold of `0.80`, the model produced `18` false positives and `22` false negatives on the held-out test set. This threshold favors a relatively conservative fraud prediction: precision is high enough to reduce unnecessary alerts, while recall still captures most fraud cases in the test set.
+
+The precision-recall tradeoff remains central. Lowering the threshold would likely catch more fraud cases but increase false positives. Raising the threshold would likely reduce false positives but miss more fraud cases. The selected threshold should therefore be viewed as an evaluation choice for this project, not a production policy.
+
+Limitations:
+
+- The dataset is anonymized and does not include richer behavioral, temporal, or account-level features.
+- The experiment uses a single train/validation/test split rather than cross-validation or time-based validation.
+- SMOTE is applied only to the training split, but synthetic oversampling may not fully represent real fraud behavior.
+- The model and threshold are not validated against operational cost, alert capacity, regulatory requirements, or live distribution shift.
+- This project is intended for reproducible ML evaluation practice, not direct deployment in a real financial risk system.
 
 ## Visualizations
 
@@ -131,12 +175,48 @@ credit-card-fraud-detection/
 +-- README.md
 ```
 
-## How To Run
+## Reproducibility / How to Reproduce
+
+Recommended environment:
+
+- Python `3.11`
+- A local virtual environment
+- The Kaggle Credit Card Fraud Detection dataset
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+On Windows PowerShell:
+
+```bash
+.\.venv\Scripts\Activate.ps1
+```
+
+On macOS/Linux:
+
+```bash
+source .venv/bin/activate
+```
 
 Install dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
+```
+
+Download the dataset from Kaggle:
+
+```text
+https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud
+```
+
+Place the downloaded CSV file here:
+
+```text
+data/raw/creditcard.csv
 ```
 
 Open the exploratory notebook if you want a compact data analysis walkthrough:
@@ -163,6 +243,12 @@ Use the saved model for prediction:
 python src/predict.py
 ```
 
+The main outputs are saved under:
+
+- `models/fraud_model.pkl`
+- `outputs/reports/`
+- `outputs/figures/`
+
 ## Output Files
 
 After running the pipeline, the following outputs are generated:
@@ -183,6 +269,10 @@ After running the pipeline, the following outputs are generated:
 - sklearn pipeline-style project organization
 - experiment reporting and reproducibility
 - GitHub-ready ML project presentation
+
+## AI-assisted Development Note
+
+Codex was used to assist with debugging, refactoring, documentation, and GitHub repository organization, while the model logic, evaluation results, and final conclusions were independently reviewed and verified.
 
 ## Future Work
 

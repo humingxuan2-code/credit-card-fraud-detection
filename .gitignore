@@ -1,9 +1,14 @@
 __pycache__/
 *.pyc
+
 .venv/
 env/
+
 .vscode/
+
 models/*.pkl
+
 data/raw/*.csv
+data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
